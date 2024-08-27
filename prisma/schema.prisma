@@ -12,3 +12,34 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// implicity Many-to-Many relationship with Message, Chatroom
+model User {
+  id          Int       @id @default(autoincrement())
+  username    String    @unique
+  password    String
+  email       String?
+  firstName   String
+  lastName    String
+  description String?
+  messages    Message[]
+  chatrooms   Chat[]
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  timestamp DateTime @default(now())
+  text      String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    Int
+}
+
+model Chat {
+  id          Int       @id @default(autoincrement())
+  name        String
+  isGroupChat Boolean   @default(false)
+  users       User[]
+  messages    Message[]
+}
