@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt')
 var jwt = require('jsonwebtoken')
 
 const prisma = new PrismaClient()
+const { verifyTokenExist, extractToken } = require('./jwt.js')
 
 // Sign in with passport session authentication
 exports.sign_in_post = asyncHandler(async (req, res, next) => {
@@ -13,17 +14,17 @@ exports.sign_in_post = asyncHandler(async (req, res, next) => {
     // password
 
     // username check
-    let user = await prisma.user.findFirst({
+    let userExisted = await prisma.user.findFirst({
         where: { username: jsonData.username }
     })
 
-    if (!user) {
+    if (!userExisted) {
         return res.json({
             error: "username not found"
         })
     };
 
-    const match = await bcrypt.compare(jsonData.password, user.password);
+    const match = await bcrypt.compare(jsonData.password, userExisted.password);
     // password check 
     if (!match) {
         // passwords do not match!
@@ -32,12 +33,17 @@ exports.sign_in_post = asyncHandler(async (req, res, next) => {
         })
     }
 
-    // remove sensitve information e.g password
-    delete user.password
-    delete user.email
-    delete user.firstName
-    delete user.lastName
-    delete user.description
+    const user = await prisma.user.findFirst({
+        where: { username: jsonData.username },
+        select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            description: true
+        }
+    })
 
     // success, send JWToken to client
     jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' }, (err, token) => {
@@ -63,18 +69,11 @@ exports.sign_up_post = asyncHandler(async (req, res, next) => {
     // firstName
     // lastName
 
-    let user = {
-        username: jsonData.username,
-        password: jsonData.password,
-        firstName: jsonData.firstName,
-        lastName: jsonData.lastName,
-    }
-
-    // checking for erros :
+    // checking for errors :
 
     // 1. check if username been used
     let userExisted = await prisma.user.findFirst({
-        where: { username: user.username }
+        where: { username: jsonData.username }
     })
 
     if (userExisted) {
@@ -93,15 +92,27 @@ exports.sign_up_post = asyncHandler(async (req, res, next) => {
     // no error, then encrypt user password and save to DB
     await prisma.user.create({
         data: {
-            username: user.username,
-            password: bcrypt.hashSync(user.password, 10),
-            firstName: user.firstName,
-            lastName: user.lastName,
+            username: jsonData.username,
+            password: bcrypt.hashSync(jsonData.password, 10),
+            firstName: jsonData.firstName,
+            lastName: jsonData.lastName,
         }
     });
 
+    const user = await prisma.user.findFirst({
+        where: { username: jsonData.username },
+        select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            description: true
+        }
+    })
+
     // success, send JWToken to client
-    jwt.sign({ user }, process.env.JWT_SECRET_KEY, (err, token) => {
+    jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' }, (err, token) => {
         if (err) {
             console.error("jwt error : ", err)
             return next(err)
@@ -114,8 +125,81 @@ exports.sign_up_post = asyncHandler(async (req, res, next) => {
     });
 })
 
+
 // log out
 exports.sign_out_get = asyncHandler(async (req, res, next) => {
     // delete front-end jwt
     res.json({ message: "logging out, token deleted" })
+});
+
+// get global profile list
+exports.get_all_profiles = asyncHandler(async (req, res, next) => {
+
+    // if GET request is sent with valid token
+    const token = extractToken(req)
+    try {
+        const authData = jwt.verify(token, process.env.JWT_SECRET_KEY)
+        if (!authData.user || !authData.user.username)
+            throw new Error("invalid token")
+
+        const allUsers = await prisma.user.findMany({
+            where: { username: { not: authData.user.username } },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+            },
+            orderBy: { firstName: 'asc' }
+        });
+
+        // console.log(allUsers)
+
+        res.json({
+            message: 'getting all user_list',
+            allUsers,
+        })
+
+    } catch (e) {
+        console.error('prisma error or invalid JWToken : ', e)
+        return res.json({
+            error: "invalid token, please sign in again.",
+        })
+    }
+});
+
+// get one profile specific
+exports.profile_get = asyncHandler(async (req, res, next) => {
+
+    // if GET request is sent with valid token
+    const token = extractToken(req)
+    try {
+        const authData = jwt.verify(token, process.env.JWT_SECRET_KEY)
+        if (!authData.user || !authData.user.username)
+            throw new Error("invalid token")
+
+        const queryUser = await prisma.user.findFirst({
+            where: { username: authData.username },
+            select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                description: true
+            }
+        })
+
+        // console.log(queryUser)
+
+        res.json({
+            message: `getting one user by userId : ${queryUser.id}`,
+            queryUser,
+        })
+
+    } catch (e) {
+        console.error('prisma error or invalid JWToken : ', e)
+        return res.json({
+            error: "invalid token, please sign in again.",
+        })
+    }
 });
