@@ -6,8 +6,10 @@ const chat_controller = require('../controllers/chat')
 /* get list of chat/groupchaps */
 router.get('/', chat_controller.get_all_chats);
 
-router.post('/:chatId', chat_controller.post_new_chat);
+router.post('/', chat_controller.create_new_chat);
 
-router.post('/:chatId/new', chat_controller.post_new_msg);
+router.get('/:chatId/', chat_controller.get_one_chat);
+
+router.post('/:chatId/', chat_controller.post_new_msg);
 
 module.exports = router;

@@ -64,6 +64,113 @@ const main = async () => {
         },
     })
 
+    // chat room creating
+    const chat1 = await prisma.chat.create({
+        data: {
+            name: '',
+            isGroupChat: false,
+            users: {
+                connect: [
+                    { id: admin1.id },
+                    { id: admin2.id }
+                ]
+            },
+            messages: {
+                create: {
+                    text: "hi this is chat1 , posted by admin1",
+                    userId: admin1.id,
+                }
+            }
+        },
+    })
+    // chat room creating
+    const chat2 = await prisma.chat.create({
+        data: {
+            name: '',
+            isGroupChat: false,
+            users: {
+                connect: [
+                    { id: admin1.id },
+                    { id: user3.id }
+                ]
+            },
+            messages: {
+                create: {
+                    text: "hi this is chat2 , posted by user3",
+                    userId: user3.id,
+                }
+            }
+        },
+    })
+    // chat room creating
+    const chat3 = await prisma.chat.create({
+        data: {
+            name: '',
+            isGroupChat: false,
+            users: {
+                connect: [
+                    { id: admin1.id },
+                    { id: user1.id }
+                ]
+            },
+            messages: {
+                create: {
+                    text: "hi this is chat3 , posted by user1",
+                    userId: user1.id,
+                }
+            }
+        },
+    })
+    // group chat room creating
+    const chat4 = await prisma.chat.create({
+        data: {
+            name: '',
+            isGroupChat: true,
+            users: {
+                connect: [
+                    { id: admin1.id },
+                    { id: admin2.id },
+                    { id: admin3.id },
+                    { id: user1.id },
+                    { id: user2.id },
+                    { id: user3.id },
+                ]
+            },
+            messages: {
+                create: [
+                    {
+                        text: "hi this is groupchat message , posted by admin1",
+                        userId: admin1.id,
+                    },
+                    {
+                        text: "hi this is groupchat message , posted by admin2",
+                        userId: admin2.id,
+                    },
+                ]
+            }
+        },
+    })
+    // chat room creating
+    const chat5 = await prisma.chat.create({
+        data: {
+            name: '',
+            isGroupChat: false,
+            users: {
+                connect: [
+                    { id: admin2.id },
+                    { id: admin3.id }
+                ]
+            },
+            messages: {
+                create: {
+                    text: "hi this is chat5 , posted by admin2, admin1 shall have no access",
+                    userId: admin2.id,
+                }
+            }
+        },
+    })
+
+
     console.log("done populating db...")
 }
 

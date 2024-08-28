@@ -54,7 +54,8 @@ describe('User-SignUp-SignIn-SignOut-Test', () => {
         // Check if the status code is 200
         expect(response.status).toBe(200);
 
-        // Check if the response body has a token
+
+        // Check if the response body has a corresponding return
         expect(response.body.message).toBe("logging out, token deleted");
     });
 });
@@ -81,7 +82,7 @@ describe('Get User Profile', () => {
         // Check if the status code is 200
         expect(response.status).toBe(200);
 
-        // Check if the response body has a token
+        // Check if the response body has a corresponding return
         expect(response.body.allUsers).toBeTruthy();
     });
 
@@ -105,7 +106,7 @@ describe('Get User Profile', () => {
         // Check if the status code is 200
         expect(response.status).toBe(200);
 
-        // Check if the response body has a token
+        // Check if the response body has a corresponding return
         expect(response.body.queryUser).toBeTruthy();
     });
 })

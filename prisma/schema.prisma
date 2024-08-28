@@ -37,9 +37,10 @@ model Message {
 }
 
 model Chat {
-  id          Int       @id @default(autoincrement())
-  name        String
-  isGroupChat Boolean   @default(false)
-  users       User[]
-  messages    Message[]
+  id            Int       @id @default(autoincrement())
+  name          String
+  isGroupChat   Boolean   @default(false)
+  users         User[]
+  messages      Message[]
+  lastUpdatedAt DateTime  @default(now())
 }
