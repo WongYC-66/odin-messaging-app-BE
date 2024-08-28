@@ -69,6 +69,7 @@ exports.sign_up_post = asyncHandler(async (req, res, next) => {
     // firstName
     // lastName
 
+    // console.log(jsonData)
     // checking for errors :
 
     // 1. check if username been used
@@ -148,6 +149,7 @@ exports.get_all_profiles = asyncHandler(async (req, res, next) => {
                 id: true,
                 firstName: true,
                 lastName: true,
+                username: true,
             },
             orderBy: { firstName: 'asc' }
         });
@@ -172,13 +174,15 @@ exports.profile_get = asyncHandler(async (req, res, next) => {
 
     // if GET request is sent with valid token
     const token = extractToken(req)
+    const username = req.params.username
+
     try {
         const authData = jwt.verify(token, process.env.JWT_SECRET_KEY)
         if (!authData.user || !authData.user.username)
             throw new Error("invalid token")
 
         const queryUser = await prisma.user.findFirst({
-            where: { username: authData.username },
+            where: { username: username },
             select: {
                 id: true,
                 username: true,
@@ -192,7 +196,7 @@ exports.profile_get = asyncHandler(async (req, res, next) => {
         // console.log(queryUser)
 
         res.json({
-            message: `getting one user by userId : ${queryUser.id}`,
+            message: `getting one user by username : ${username}`,
             queryUser,
         })
 
@@ -200,6 +204,57 @@ exports.profile_get = asyncHandler(async (req, res, next) => {
         console.error('prisma error or invalid JWToken : ', e)
         return res.json({
             error: "invalid token, please sign in again.",
+        })
+    }
+});
+
+// update one profile specific
+exports.profile_update = asyncHandler(async (req, res, next) => {
+
+    // if GET request is sent with valid token
+    const token = extractToken(req)
+    const username = req.params.username
+    const jsonData = req.body
+
+    // console.log(jsonData)
+    
+    try {
+        const authData = jwt.verify(token, process.env.JWT_SECRET_KEY)
+        if (!authData.user || !authData.user.username)
+            throw new Error("invalid token")
+
+        if (authData.user.username != username)
+            throw new Error("un-Authorized")
+
+        const updatedUser = await prisma.user.update({
+            where: { username: username },
+            data: {
+                firstName: jsonData.firstName,
+                lastName: jsonData.lastName,
+                description: jsonData.description,
+                email: jsonData.email,
+            },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                description: true
+            }
+        })
+
+        // console.log(updatedUser)
+
+        res.json({
+            message: `success updating one user by username : ${username}`,
+            updatedUser,
+        })
+
+    } catch (e) {
+        if(process.env.NODE_ENV != 'test')
+        console.error('prisma error or invalid JWToken : ', e)
+        return res.json({
+            error: e.message,
         })
     }
 });

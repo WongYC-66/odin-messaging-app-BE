@@ -96,7 +96,7 @@ describe('Get User Profile', () => {
             });
 
         const response = await request(app)
-            .get('/users/profile/2')
+            .get('/users/profile/admin1')
             .set('Accept', 'application/json')
             .set('Authorization', `Bearer ${loginResponse.body.token}`)
 
@@ -108,5 +108,66 @@ describe('Get User Profile', () => {
 
         // Check if the response body has a corresponding return
         expect(response.body.queryUser).toBeTruthy();
+    });
+
+
+    test('update one specific profile working', async () => {
+        const loginResponse = await request(app)
+            .post('/users/sign-in/')
+            .set('Accept', 'application/json')
+            .send({
+                username: 'admin2',
+                password: 'admin2',
+            });
+
+        const response = await request(app)
+            .put('/users/profile/admin2')
+            .set('Accept', 'application/json')
+            .set('Authorization', `Bearer ${loginResponse.body.token}`)
+            .send({
+                username: 'admin2',
+                firstName: 'Admin2',
+                lastName: 'edited',
+                email: 'admin@example.com',
+            });
+
+        if (response.body.error)
+            console.log(response.body)
+
+        // Check if the status code is 200
+        expect(response.status).toBe(200);
+
+        // Check if the response body has a corresponding return
+        expect(response.body.updatedUser).toBeTruthy();
+    });
+
+    test('update rejected at other"s profile', async () => {
+        const loginResponse = await request(app)
+            .post('/users/sign-in/')
+            .set('Accept', 'application/json')
+            .send({
+                username: 'admin2',
+                password: 'admin2',
+            });
+
+        const response = await request(app)
+            .put('/users/profile/admin1')
+            .set('Accept', 'application/json')
+            .set('Authorization', `Bearer ${loginResponse.body.token}`)
+            .send({
+                username: 'admin1',
+                firstName: 'Admin1',
+                lastName: 'edited',
+                email: 'admin@example.com',
+            });
+
+        if (response.body.error)
+            console.log(response.body)
+
+        // Check if the status code is 200
+        expect(response.status).toBe(200);
+
+        // Check if the response body has a corresponding return
+        expect(response.body.updatedUser).not.toBeTruthy();
     });
 })

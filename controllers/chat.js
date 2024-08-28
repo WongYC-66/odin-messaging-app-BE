@@ -37,6 +37,14 @@ exports.get_all_chats = asyncHandler(async (req, res, next) => {
                     },
                     take: 1
                 },
+                users: {
+                    select: {
+                        id: true,
+                        username: true,
+                        firstName: true,
+                        lastName: true
+                    }
+                }
             },
             orderBy: { lastUpdatedAt: 'desc' }
         });

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const user_controller = require('../controllers/user')
+// parent route : /users
 
 /* POST user sign in. */
 router.post('/sign-in/', user_controller.sign_in_post);
@@ -16,6 +17,9 @@ router.get('/sign-out/', user_controller.sign_out_get);
 router.get('/profile/', user_controller.get_all_profiles);
 
 /* GET user profile detail. */
-router.get('/profile/:userId', user_controller.profile_get);
+router.get('/profile/:username', user_controller.profile_get);
+
+/* UPDATE user profile detail. */
+router.put('/profile/:username', user_controller.profile_update);
 
 module.exports = router;

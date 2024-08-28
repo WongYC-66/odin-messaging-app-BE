@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const chat_controller = require('../controllers/chat')
+// parent route : /chats
 
 /* get list of chat/groupchaps */
 router.get('/', chat_controller.get_all_chats);
