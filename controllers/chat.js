@@ -144,7 +144,7 @@ exports.create_new_chat = asyncHandler(async (req, res, next) => {
         if (!authData.user || !authData.user.username)
             throw new Error("invalid token")
 
-        const existingChat = await prisma.chat.findFirst({
+        let existingChat = await prisma.chat.findFirst({
             where: {
                 AND: [
                     {
@@ -154,32 +154,28 @@ exports.create_new_chat = asyncHandler(async (req, res, next) => {
                             },
                         }
                     },
-                    { isGroupChat: false },
+                    { isGroupChat: false },     // groupchat always create new
                 ]
             },
         });
 
-        // if Non-groupChat existed, skip
-        // groupchat always create new
-        if (existingChat)
-            throw new Error("Chat already existed")
-
-        // Not found, so create  a new chat / new group chat
-        const chat = await prisma.chat.create({
-            data: {
-                name: '',
-                isGroupChat: jsonData.isGroupChat,
-                users: {
-                    connect: jsonData.userIds.map(id => ({ id })),  // array of obj
+        if (!existingChat){
+            // Not found, so create  a new chat / new group chat
+            existingChat = await prisma.chat.create({
+                data: {
+                    name: '',
+                    isGroupChat: jsonData.isGroupChat,
+                    users: {
+                        connect: jsonData.userIds.map(id => ({ id })),  // array of obj
+                    },
                 },
-            },
-        })
-
+            })
+        }
         // console.log(chat)
 
         res.json({
             message: 'chat room created',
-            chat,
+            chat : existingChat,
         })
 
     } catch (e) {
