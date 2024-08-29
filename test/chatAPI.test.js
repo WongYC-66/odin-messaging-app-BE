@@ -1,5 +1,6 @@
 const request = require("supertest");
 const app = require('../app.js');
+const { default: nodemon } = require("nodemon");
 
 
 describe('Get Chat ', () => {
@@ -103,7 +104,7 @@ describe('Post new Chat or Message', () => {
         expect(response.body.chat).toBeTruthy();
     });
 
-    test('post rejected to create duplicate chat', async () => {
+    test('post new duplicate chat, get some chat Id', async () => {
         const loginResponse = await request(app)
             .post('/users/sign-in/')
             .set('Accept', 'application/json')
@@ -125,7 +126,8 @@ describe('Post new Chat or Message', () => {
         expect(response.status).toBe(200);
 
         // Check if the response body has a corresponding return
-        expect(response.body.chat).not.toBeTruthy();
+        expect(response.body.chat).toBeTruthy();
+        expect(response.body.chat.id).toBe(6);      // user[1,5] already have chat_id of 6. must be 6
     });
 
     test('post new msg route working', async () => {
