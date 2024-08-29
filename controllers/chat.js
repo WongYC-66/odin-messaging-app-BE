@@ -94,7 +94,7 @@ exports.get_one_chat = asyncHandler(async (req, res, next) => {
                 },
                 messages: {
                     orderBy: {
-                        timestamp: 'desc'
+                        timestamp: 'asc'
                     },
                     include: {
                         user: {
