@@ -41,7 +41,8 @@ exports.sign_in_post = asyncHandler(async (req, res, next) => {
             firstName: true,
             lastName: true,
             email: true,
-            description: true
+            description: true,
+            lastLoginAt: true,
         }
     })
 
@@ -53,6 +54,11 @@ exports.sign_in_post = asyncHandler(async (req, res, next) => {
         res.json({
             message: `success sign in for username : ${user.username}`,
             token
+        })
+        // update user last sign-in
+        prisma.user.update({
+            where: { username: user.username },
+            data: { lastLoginAt: new Date() }
         })
     });
 
@@ -108,7 +114,8 @@ exports.sign_up_post = asyncHandler(async (req, res, next) => {
             firstName: true,
             lastName: true,
             email: true,
-            description: true
+            description: true,
+            lastLoginAt: true,
         }
     })
 
@@ -150,6 +157,7 @@ exports.get_all_profiles = asyncHandler(async (req, res, next) => {
                 firstName: true,
                 lastName: true,
                 username: true,
+                lastLoginAt: true,
             },
             orderBy: { firstName: 'asc' }
         });
@@ -189,7 +197,8 @@ exports.profile_get = asyncHandler(async (req, res, next) => {
                 firstName: true,
                 lastName: true,
                 email: true,
-                description: true
+                description: true,
+                lastLoginAt: true,
             }
         })
 
@@ -217,7 +226,7 @@ exports.profile_update = asyncHandler(async (req, res, next) => {
     const jsonData = req.body
 
     // console.log(jsonData)
-    
+
     try {
         const authData = jwt.verify(token, process.env.JWT_SECRET_KEY)
         if (!authData.user || !authData.user.username)
@@ -239,7 +248,8 @@ exports.profile_update = asyncHandler(async (req, res, next) => {
                 firstName: true,
                 lastName: true,
                 email: true,
-                description: true
+                description: true,
+                lastLoginAt: true,
             }
         })
 
@@ -251,8 +261,8 @@ exports.profile_update = asyncHandler(async (req, res, next) => {
         })
 
     } catch (e) {
-        if(process.env.NODE_ENV != 'test')
-        console.error('prisma error or invalid JWToken : ', e)
+        if (process.env.NODE_ENV != 'test')
+            console.error('prisma error or invalid JWToken : ', e)
         return res.json({
             error: e.message,
         })

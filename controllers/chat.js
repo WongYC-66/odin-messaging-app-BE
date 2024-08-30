@@ -31,7 +31,8 @@ exports.get_all_chats = asyncHandler(async (req, res, next) => {
                                 id: true,
                                 username: true,
                                 firstName: true,
-                                lastName: true
+                                lastName: true,
+                                lastLoginAt: true,
                             }
                         }
                     },
@@ -42,7 +43,8 @@ exports.get_all_chats = asyncHandler(async (req, res, next) => {
                         id: true,
                         username: true,
                         firstName: true,
-                        lastName: true
+                        lastName: true,
+                        lastLoginAt: true,
                     }
                 }
             },
@@ -89,7 +91,8 @@ exports.get_one_chat = asyncHandler(async (req, res, next) => {
                         id: true,
                         username: true,
                         firstName: true,
-                        lastName: true
+                        lastName: true,
+                        lastLoginAt: true,
                     }
                 },
                 messages: {
@@ -102,7 +105,8 @@ exports.get_one_chat = asyncHandler(async (req, res, next) => {
                                 id: true,
                                 username: true,
                                 firstName: true,
-                                lastName: true
+                                lastName: true,
+                                lastLoginAt: true,
                             }
                         }
                     },
@@ -144,6 +148,8 @@ exports.create_new_chat = asyncHandler(async (req, res, next) => {
         const authData = jwt.verify(token, process.env.JWT_SECRET_KEY)
         if (!authData.user || !authData.user.username)
             throw new Error("invalid token")
+        if(jsonData.userIds.length <= 1)
+            throw new Error("invalid action, too less users")
 
         let existingChat = await prisma.chat.findFirst({
             where: {
@@ -156,9 +162,9 @@ exports.create_new_chat = asyncHandler(async (req, res, next) => {
             },
         });
 
-        const isGroupChat = jsonData.userIds.length <= 2 ? false : jsonData.groupName 
+        const isGroupChat = jsonData.userIds.length <= 2 ? false : jsonData.isGroupChat 
 
-        if (!existingChat || jsonData.isGroupChat) {
+        if (!existingChat || isGroupChat) {
             // Not found, so create  a new chat / new group chat
             existingChat = await prisma.chat.create({
                 data: {

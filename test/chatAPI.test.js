@@ -127,7 +127,7 @@ describe('Post new Chat or Message', () => {
 
         // Check if the response body has a corresponding return
         expect(response.body.chat).toBeTruthy();
-        expect(response.body.chat.id).toBe(6);      // user[1,5] already have chat_id of 6. must be 6
+        expect(response.body.chat.id).toBe(13);      // user[1,5] would  have newest chat_id of 13.
     });
 
     test('post new msg route working', async () => {
