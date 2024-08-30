@@ -8,9 +8,9 @@ describe('User-SignUp-SignIn-SignOut-Test', () => {
             .post('/users/sign-up/')
             .set('Accept', 'application/json')
             .send({
-                username: 'user4',
-                password: 'user4',
-                confirmPassword: 'user4',
+                username: 'user100',
+                password: 'user100',
+                confirmPassword: 'user100',
                 firstName: 'Kelly',
                 lastName: 'Jugder',
             });

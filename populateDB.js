@@ -15,7 +15,8 @@ const main = async () => {
             password: bcrypt.hashSync('admin1', 10),
             email: 'admin1@example.com',
             firstName: 'Admin1',
-            lastName: 'BBB',
+            lastName: 'A',
+            description: 'This is admin1 description'
         },
     })
     const admin2 = await prisma.user.create({
@@ -24,7 +25,8 @@ const main = async () => {
             password: bcrypt.hashSync('admin2', 10),
             email: 'admin2@example.com',
             firstName: 'Admin2',
-            lastName: 'CCC',
+            lastName: 'B',
+            description: 'This is admin2 description'
         },
     })
     const admin3 = await prisma.user.create({
@@ -33,16 +35,18 @@ const main = async () => {
             password: bcrypt.hashSync('admin3', 10),
             email: 'admin3@example.com',
             firstName: 'Admin3',
-            lastName: 'DDD',
+            lastName: 'C',
+            description: 'This is admin3 description'
         },
     })
     const user1 = await prisma.user.create({
         data: {
             username: 'user1',
             password: bcrypt.hashSync('user1', 10),
-            email: 'user1@example.com',
+            email: 'John Doe@example.com',
             firstName: 'John',
             lastName: 'Doe',
+            description: 'Im John Doe, this is a fake description'
         },
     })
     const user2 = await prisma.user.create({
@@ -52,6 +56,7 @@ const main = async () => {
             email: 'user2@example.com',
             firstName: 'Amy',
             lastName: 'Baba',
+            description: 'Im Amy Baba, this is a fake description'
         },
     })
     const user3 = await prisma.user.create({
@@ -61,6 +66,77 @@ const main = async () => {
             email: 'user2@example.com',
             firstName: 'Zack',
             lastName: 'Hershall',
+            description: 'Im Zack Hershal, this is a fake description'
+        },
+    })
+    const user4 = await prisma.user.create({
+        data: {
+            username: 'user4',
+            password: bcrypt.hashSync('user', 10),
+            email: 'user4@example.com',
+            firstName: 'Yummy',
+            lastName: 'Pringles',
+            description: 'Im Yummy Pringles, this is a fake description'
+        },
+    })
+    const user5 = await prisma.user.create({
+        data: {
+            username: 'user5',
+            password: bcrypt.hashSync('user5', 10),
+            email: 'user5@example.com',
+            firstName: 'Ikea',
+            lastName: 'Aeki',
+            description: 'Im Ikea Aeki, this is a fake description'
+        },
+    })
+    const user6 = await prisma.user.create({
+        data: {
+            username: 'user6',
+            password: bcrypt.hashSync('user6', 10),
+            email: 'user6@example.com',
+            firstName: 'Toyota',
+            lastName: 'Atoyot',
+            description: 'Im Toyota, this is a fake description'
+        },
+    })
+    const user7 = await prisma.user.create({
+        data: {
+            username: 'user7',
+            password: bcrypt.hashSync('user7', 10),
+            email: 'user7@example.com',
+            firstName: 'Naruto',
+            lastName: 'Abc',
+            description: 'Im Naruto, this is a fake description'
+        },
+    })
+    const user8 = await prisma.user.create({
+        data: {
+            username: 'user8',
+            password: bcrypt.hashSync('user8', 10),
+            email: 'user8@example.com',
+            firstName: 'Sasuke',
+            lastName: 'Python',
+            description: 'psssst~~ this is a fake description'
+        },
+    })
+    const user9 = await prisma.user.create({
+        data: {
+            username: 'user9',
+            password: bcrypt.hashSync('user9', 10),
+            email: 'user9@example.com',
+            firstName: 'Momomo',
+            lastName: 'Moooo',
+            description: 'mooowww this is a fake description'
+        },
+    })
+    const user10 = await prisma.user.create({
+        data: {
+            username: 'visitor',
+            password: bcrypt.hashSync('visitor', 10),
+            email: 'visitor@example.com',
+            firstName: 'Visitor',
+            lastName: 'V',
+            description: 'Visitor description - fake'
         },
     })
 
@@ -124,7 +200,7 @@ const main = async () => {
     // group chat room creating
     const chat4 = await prisma.chat.create({
         data: {
-            name: '',
+            name: 'testing group chat name',
             isGroupChat: true,
             users: {
                 connect: [

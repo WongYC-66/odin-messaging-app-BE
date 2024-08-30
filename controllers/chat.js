@@ -138,6 +138,7 @@ exports.create_new_chat = asyncHandler(async (req, res, next) => {
     const jsonData = req.body
     // jsonData.userIds
     // jsonData.isGroupChat
+    // jsonData.groupName
 
     try {
         const authData = jwt.verify(token, process.env.JWT_SECRET_KEY)
@@ -146,24 +147,20 @@ exports.create_new_chat = asyncHandler(async (req, res, next) => {
 
         let existingChat = await prisma.chat.findFirst({
             where: {
-                AND: [
-                    {
-                        users: {
-                            every: {
-                                id: { in: jsonData.userIds.map(Number) }
-                            },
-                        }
+                users: {
+                    every: {
+                        id: { in: jsonData.userIds.map(Number) }
                     },
-                    { isGroupChat: false },     // groupchat always create new
-                ]
+                },
+                isGroupChat: false,   // check existing 1-to-1 chat
             },
         });
 
-        if (!existingChat){
+        if (!existingChat || jsonData.isGroupChat) {
             // Not found, so create  a new chat / new group chat
             existingChat = await prisma.chat.create({
                 data: {
-                    name: '',
+                    name: jsonData.isGroupChat ? jsonData.groupName : '',
                     isGroupChat: jsonData.isGroupChat,
                     users: {
                         connect: jsonData.userIds.map(id => ({ id })),  // array of obj
@@ -175,7 +172,7 @@ exports.create_new_chat = asyncHandler(async (req, res, next) => {
 
         res.json({
             message: 'chat room created',
-            chat : existingChat,
+            chat: existingChat,
         })
 
     } catch (e) {
