@@ -47,18 +47,19 @@ exports.sign_in_post = asyncHandler(async (req, res, next) => {
     })
 
     // success, send JWToken to client
-    jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' }, (err, token) => {
+    jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' }, async (err, token) => {
         if (err) {
             return next(err)
         }
+        
+        // update user last sign-in
+        await prisma.user.update({
+            where: { username: user.username },
+            data: { lastLoginAt: new Date() }
+        })
         res.json({
             message: `success sign in for username : ${user.username}`,
             token
-        })
-        // update user last sign-in
-        prisma.user.update({
-            where: { username: user.username },
-            data: { lastLoginAt: new Date() }
         })
     });
 
@@ -75,7 +76,6 @@ exports.sign_up_post = asyncHandler(async (req, res, next) => {
     // firstName
     // lastName
 
-    // console.log(jsonData)
     // checking for errors :
 
     // 1. check if username been used
@@ -162,8 +162,6 @@ exports.get_all_profiles = asyncHandler(async (req, res, next) => {
             orderBy: { firstName: 'asc' }
         });
 
-        // console.log(allUsers)
-
         res.json({
             message: 'getting all user_list',
             allUsers,
@@ -202,8 +200,6 @@ exports.profile_get = asyncHandler(async (req, res, next) => {
             }
         })
 
-        // console.log(queryUser)
-
         res.json({
             message: `getting one user by username : ${username}`,
             queryUser,
@@ -224,8 +220,6 @@ exports.profile_update = asyncHandler(async (req, res, next) => {
     const token = extractToken(req)
     const username = req.params.username
     const jsonData = req.body
-
-    // console.log(jsonData)
 
     try {
         const authData = jwt.verify(token, process.env.JWT_SECRET_KEY)
@@ -252,8 +246,6 @@ exports.profile_update = asyncHandler(async (req, res, next) => {
                 lastLoginAt: true,
             }
         })
-
-        // console.log(updatedUser)
 
         res.json({
             message: `success updating one user by username : ${username}`,

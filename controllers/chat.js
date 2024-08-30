@@ -51,9 +51,6 @@ exports.get_all_chats = asyncHandler(async (req, res, next) => {
             orderBy: { lastUpdatedAt: 'desc' }
         });
 
-        // console.log(allChats)
-        // console.log(allChats[0].messages)
-
         res.json({
             message: 'getting all chats_list',
             allChats,
@@ -114,10 +111,6 @@ exports.get_one_chat = asyncHandler(async (req, res, next) => {
             },
         });
 
-        // console.log(chat)
-        // if (chat.messages && chat.messages.length)
-        //     console.log(chat.messages[0])
-
         if (!chat)
             throw new Error("invalid chatId or user has no access")
 
@@ -176,7 +169,6 @@ exports.create_new_chat = asyncHandler(async (req, res, next) => {
                 },
             })
         }
-        // console.log(chat)
 
         res.json({
             message: 'chat room created',
@@ -221,7 +213,6 @@ exports.post_new_msg = asyncHandler(async (req, res, next) => {
                 lastUpdatedAt: new Date()
             }
         });
-        // console.log(chat)
 
         if (!chat)
             throw new Error("chatId not found or not authorized")
