@@ -246,6 +246,76 @@ const main = async () => {
         },
     })
 
+    const users = await Promise.all([user1, user2, user3, user5, user8, user9]);
+    // Visitor Chat room creating, visitor Id = 13, 1-to-1
+    const chatPromises = users.map(user =>
+        prisma.chat.create({
+            data: {
+                name: '',
+                isGroupChat: false,
+                users: {
+                    connect: [
+                        { id: user.id },
+                        { id: user10.id }       // user10 = visitor
+                    ]
+                },
+                messages: {
+                    create: [
+                        {
+                            text: `hi, im ${user.firstName} ${user.lastName}. How are u?`,
+                            userId: user.id,
+                        },
+                        {
+                            text: `hi....`,
+                            userId: user10.id,
+                        }
+                    ]
+                }
+            },
+        })
+    );
+    // Vistor Group Chat room creating.
+    const chat12 = await prisma.chat.create({
+        data: {
+            name: 'My Family',
+            isGroupChat: true,
+            users: {
+                connect: [
+                    { id: user1.id },
+                    { id: user2.id },
+                    { id: user9.id },
+                    { id: user7.id },
+                    { id: user10.id },
+                ]
+            },
+            messages: {
+                create: [
+                    {
+                        text: "hi, this is ur cousin talking",
+                        userId: user1.id,
+                    },
+                    {
+                        text: "bruuuh",
+                        userId: user2.id,
+                    },
+                    {
+                        text: "<_<",
+                        userId: user9.id,
+                    },
+                    {
+                        text: "whyyyyyyy u funny",
+                        userId: user7.id,
+                    },
+                    {
+                        text: "u sure this my family",
+                        userId: user10.id,
+                    },
+                ]
+            }
+        },
+    })
+
+    await Promise.all(chatPromises);
 
     console.log("done populating db...")
 }

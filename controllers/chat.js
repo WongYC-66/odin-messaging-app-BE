@@ -156,12 +156,14 @@ exports.create_new_chat = asyncHandler(async (req, res, next) => {
             },
         });
 
+        const isGroupChat = jsonData.userIds.length <= 2 ? false : jsonData.groupName 
+
         if (!existingChat || jsonData.isGroupChat) {
             // Not found, so create  a new chat / new group chat
             existingChat = await prisma.chat.create({
                 data: {
                     name: jsonData.isGroupChat ? jsonData.groupName : '',
-                    isGroupChat: jsonData.isGroupChat,
+                    isGroupChat: isGroupChat,
                     users: {
                         connect: jsonData.userIds.map(id => ({ id })),  // array of obj
                     },
