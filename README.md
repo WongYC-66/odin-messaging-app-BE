@@ -1,2 +1,25 @@
-# odin-messaging-app-BE
-A simple backend build with NodeJS, Express, Prisma, PostgreSQL
+# Odin-Message-App
+- An full-stack web application for users to send message to each other , this is part of projects built along TheOdinProject Course.
+- Tech Stack :
+  1. FrontEnd (Vite + React + React Router + Bootstrap)
+  2. BackEnd (Node + Express + PostgreSQL + Prisma)
+
+# To Run :
+1. npm install
+2. add .env file
+    - add DATABASE_URL = \<your postgresSQL connection string>
+    - add JWT_SECRET_KEY = \<your secret key>
+3. npx prisma migrate dev
+4. npm run resetDB
+5. npm run serverstart , enjoy locally  at http://localhost:3000/
+
+** Jest + SuperTest Tests are available @npm run test
+
+# Live demo :
+- FrontEnd : https://wongyc-66.github.io/odin-messaging-app-FE/
+- BackEnd : https://odin-messaging-app-be.adaptable.app
+
+# Source:
+- FE : https://github.com/WongYC-66/odin-messaging-app-FE
+- BE : https://github.com/WongYC-66/odin-messaging-app-BE
+

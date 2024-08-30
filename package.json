@@ -6,8 +6,8 @@
     "start": "node ./bin/www",
     "devstart": "nodemon ./bin/www",
     "serverstart": "DEBUG=odin-blog-api-psql-prisma:* && npm run devstart",
-    "resetDB": "npx prisma migrate reset --force && node populateDB ",
-    "deployDB": "npx prisma migrate deploy --schema=./prisma/schema.prisma ",
+    "resetDB": "npx prisma migrate reset --force && node populateDB",
+    "deployDB": "npx prisma migrate deploy --schema=./prisma/schema.prisma",
     "test": "npm run resetDB && NODE_ENV=test jest --verbose"
   },
   "dependencies": {
