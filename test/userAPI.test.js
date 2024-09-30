@@ -116,19 +116,19 @@ describe('Get User Profile', () => {
             .post('/users/sign-in/')
             .set('Accept', 'application/json')
             .send({
-                username: 'admin2',
-                password: 'admin2',
+                username: 'admin1',
+                password: 'admin1',
             });
-
+        console.log(loginResponse.body.token)
         const response = await request(app)
-            .put('/users/profile/admin2')
+            .put('/users/profile/admin1')
             .set('Accept', 'application/json')
             .set('Authorization', `Bearer ${loginResponse.body.token}`)
             .send({
-                username: 'admin2',
-                firstName: 'Admin2',
+                username: 'admin1',
+                firstName: 'Admin1',
                 lastName: 'edited',
-                email: 'admin@example.com',
+                email: 'admin@example-edited.com',
             });
 
         if (response.body.error)

@@ -104,7 +104,7 @@ describe('Post new Chat or Message', () => {
         expect(response.body.chat).toBeTruthy();
     });
 
-    test('post new duplicate chat, get some chat Id', async () => {
+    test('post new duplicate chat, get same chat Id', async () => {
         const loginResponse = await request(app)
             .post('/users/sign-in/')
             .set('Accept', 'application/json')
@@ -122,12 +122,21 @@ describe('Post new Chat or Message', () => {
                 isGroupChat: false,
             });
 
+        const response2 = await request(app)
+            .post('/chats/')
+            .set('Accept', 'application/json')
+            .set('Authorization', `Bearer ${loginResponse.body.token}`)
+            .send({
+                userIds: [1, 5],
+                isGroupChat: false,
+            });
+
         // Check if the status code is 200
         expect(response.status).toBe(200);
 
         // Check if the response body has a corresponding return
         expect(response.body.chat).toBeTruthy();
-        expect(response.body.chat.id).toBe(13);      // user[1,5] would  have newest chat_id of 13.
+        expect(response.body.chat.id).toBe(response2.body.chat.id);      // shall have same chat_id, not creating new
     });
 
     test('post new msg route working', async () => {

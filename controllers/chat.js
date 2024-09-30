@@ -4,6 +4,7 @@ var jwt = require('jsonwebtoken')
 
 const prisma = new PrismaClient()
 const { verifyTokenExist, extractToken } = require('./jwt.js')
+const { updateLastLogin } = require('./user.js') 
 
 exports.get_all_chats = asyncHandler(async (req, res, next) => {
 
@@ -50,6 +51,9 @@ exports.get_all_chats = asyncHandler(async (req, res, next) => {
             },
             orderBy: { lastUpdatedAt: 'desc' }
         });
+
+        // update user last sign-in
+        await updateLastLogin(authData.user.username)
 
         res.json({
             message: 'getting all chats_list',
@@ -111,6 +115,9 @@ exports.get_one_chat = asyncHandler(async (req, res, next) => {
             },
         });
 
+        // update user last sign-in
+        await updateLastLogin(authData.user.username)
+
         if (!chat)
             throw new Error("invalid chatId or user has no access")
 
@@ -170,6 +177,9 @@ exports.create_new_chat = asyncHandler(async (req, res, next) => {
             })
         }
 
+        // update user last sign-in
+        await updateLastLogin(authData.user.username)
+
         res.json({
             message: 'chat room created',
             chat: existingChat,
@@ -216,6 +226,9 @@ exports.post_new_msg = asyncHandler(async (req, res, next) => {
 
         if (!chat)
             throw new Error("chatId not found or not authorized")
+
+        // update user last sign-in
+        await updateLastLogin(authData.user.username)
 
         res.json({
             message: `post one new message by chatId : ${chat.id}`,

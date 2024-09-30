@@ -53,10 +53,8 @@ exports.sign_in_post = asyncHandler(async (req, res, next) => {
         }
         
         // update user last sign-in
-        await prisma.user.update({
-            where: { username: user.username },
-            data: { lastLoginAt: new Date() }
-        })
+        await updateLastLogin(user.username)
+
         res.json({
             message: `success sign in for username : ${user.username}`,
             token
@@ -162,6 +160,9 @@ exports.get_all_profiles = asyncHandler(async (req, res, next) => {
             orderBy: { firstName: 'asc' }
         });
 
+        // update user last sign-in
+        await updateLastLogin(authData.user.username)
+
         res.json({
             message: 'getting all user_list',
             allUsers,
@@ -199,6 +200,9 @@ exports.profile_get = asyncHandler(async (req, res, next) => {
                 lastLoginAt: true,
             }
         })
+
+        // update user last sign-in
+        await updateLastLogin(authData.user.username)
 
         res.json({
             message: `getting one user by username : ${username}`,
@@ -247,6 +251,9 @@ exports.profile_update = asyncHandler(async (req, res, next) => {
             }
         })
 
+        // update user last sign-in
+        await updateLastLogin(authData.user.username)
+
         res.json({
             message: `success updating one user by username : ${username}`,
             updatedUser,
@@ -260,3 +267,13 @@ exports.profile_update = asyncHandler(async (req, res, next) => {
         })
     }
 });
+
+const updateLastLogin = async (username) => {
+    // update user last sign-in
+    await prisma.user.update({
+        where: { username },
+        data: { lastLoginAt: new Date() }
+    })
+}
+
+exports.updateLastLogin  = updateLastLogin

@@ -1,3 +1,6 @@
+const { PrismaClient } = require('@prisma/client')
+const prisma = new PrismaClient()
+
 var jwt = require('jsonwebtoken')
 
 // FORMAT OF TOKEN
@@ -5,7 +8,7 @@ var jwt = require('jsonwebtoken')
 
 
 // middleware jwt function, verifyToken
-exports.verifyTokenExist = (req, res, next) => {
+exports.verifyTokenExist = async (req, res, next) => {
   const bearerHeader = req.headers['authorization']
 
   if (bearerHeader == undefined) {
@@ -17,7 +20,9 @@ exports.verifyTokenExist = (req, res, next) => {
   if (!bearerToken)
     return res.sendStatus(401)  // no token sent
 
+  // valid token
   req.token = bearerToken
+
   next()
 };
 
