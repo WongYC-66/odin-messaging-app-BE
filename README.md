@@ -28,7 +28,7 @@
 
 # Live demo :
 - FrontEnd : https://wongyc-66.github.io/odin-messaging-app-FE/
-- BackEnd : https://odin-messaging-app-be.adaptable.app
+- BackEnd : https://odin-messaging-app-be.onrender.com/
 
 # Source:
 - FE : https://github.com/WongYC-66/odin-messaging-app-FE
